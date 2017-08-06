@@ -72,12 +72,12 @@
       <dependency>
         <groupId>org.nuxeo.labs.s3.simple.blobprovider</groupId>
         <artifactId>nuxeo-s3-simple-blobprovider-core</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.nuxeo.labs.s3.simple.blobprovider</groupId>
         <artifactId>nuxeo-s3-simple-blobprovider-package</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

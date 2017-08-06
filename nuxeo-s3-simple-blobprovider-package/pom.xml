@@ -9,7 +9,7 @@
 
   <artifactId>nuxeo-s3-simple-blobprovider-package</artifactId>
   <packaging>zip</packaging>
-  <name>Nuxeo s3 simple blobprovider package - Nuxeo s3 simple blobprovider</name>
+  <name>Nuxeo S3 simple blobprovider package - Nuxeo S3 simple blobprovider</name>
 
   <dependencies>
     <!-- Base distribution(s) for the MP -->
