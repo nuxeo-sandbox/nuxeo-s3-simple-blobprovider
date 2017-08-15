@@ -19,6 +19,13 @@
       <type>zip</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.marketplace.amazon-s3-online-storage</groupId>
+      <artifactId>ear</artifactId>
+      <type>zip</type>
+      <scope>provided</scope>
+      <version>${nuxeo.amazon.s3.version}</version>
+    </dependency>
 
     <!-- Additional bundles to be deployed by the MP -->
     <dependency>
