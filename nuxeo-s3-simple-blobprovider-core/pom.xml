@@ -60,6 +60,7 @@
             <simple.s3.bucket>${simple.s3.bucket}</simple.s3.bucket>
             <simple.s3.awsid>${simple.s3.awsid}</simple.s3.awsid>
             <simple.s3.awssecret>${simple.s3.awssecret}</simple.s3.awssecret>
+            <simple.s3.object.key>${simple.s3.object.key}</simple.s3.object.key>
           </systemPropertyVariables>
         </configuration>
       </plugin>

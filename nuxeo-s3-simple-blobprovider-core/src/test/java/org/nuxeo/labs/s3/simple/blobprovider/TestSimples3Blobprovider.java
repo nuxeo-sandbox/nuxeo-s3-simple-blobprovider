@@ -20,6 +20,7 @@ package org.nuxeo.labs.s3.simple.blobprovider;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.OperationException;
@@ -58,16 +59,13 @@ public class TestSimples3Blobprovider {
     @Test
     public void testGetBlob() throws IOException, OperationException {
         BlobProvider s3provider = new SimpleS3Blobprovider();
-        Map<String,String> properties = new HashMap<>();
-        properties.put("region",System.getProperty("simple.s3.region"));
-        properties.put("bucket",System.getProperty("simple.s3.bucket"));
-        properties.put("awsid",System.getProperty("simple.s3.awsid"));
-        properties.put("awssecret",System.getProperty("simple.s3.awssecret"));
+        Map<String,String> properties = getBaseProperties();
+        Assume.assumeTrue("Credentials are set",properties!=null);
         s3provider.initialize("s3simple",properties);
         blobManager.getBlobProviders().put("s3simple",s3provider);
         BlobManager.BlobInfo info = new BlobManager.BlobInfo();
-        info.key = "s3simple:"+"CB_102_55A-3_55A-1.mov";
-        info.filename = "CB_102_55A-3_55A-1.mov";
+        info.key = "s3simple:"+getObjectKey();
+        info.filename = getObjectKey();
         Blob blob = s3provider.readBlob(info);
         File tmp = Framework.createTempFile("nxtmp-", "");
         FileUtils.copyInputStreamToFile(blob.getStream(),tmp);
@@ -78,17 +76,14 @@ public class TestSimples3Blobprovider {
     @Test
     public void testGetDirectDownload() throws IOException, OperationException {
         BlobProvider s3provider = new SimpleS3Blobprovider();
-        Map<String,String> properties = new HashMap<>();
-        properties.put("region",System.getProperty("simple.s3.region"));
-        properties.put("bucket",System.getProperty("simple.s3.bucket"));
-        properties.put("awsid",System.getProperty("simple.s3.awsid"));
-        properties.put("awssecret",System.getProperty("simple.s3.awssecret"));
+        Map<String,String> properties = getBaseProperties();
+        Assume.assumeTrue("Credentials are set",properties!=null);
         properties.put("directdownload","true");
         s3provider.initialize("s3simple",properties);
         blobManager.getBlobProviders().put("s3simple",s3provider);
         BlobManager.BlobInfo info = new BlobManager.BlobInfo();
-        info.key = "s3simple:"+"CB_102_55A-3_55A-1.mov";
-        info.filename = "CB_102_55A-3_55A-1.mov";
+        info.key = "s3simple:"+getObjectKey();
+        info.filename = getObjectKey();
         ManagedBlob blob = (ManagedBlob) s3provider.readBlob(info);
         URI downloadURI = s3provider.getURI(blob, BlobManager.UsageHint.DOWNLOAD,null);
         Assert.assertNotNull(downloadURI);
@@ -97,14 +92,27 @@ public class TestSimples3Blobprovider {
     @Test(expected = IOException.class)
     public void testGetBlobNull() throws IOException, OperationException {
         BlobProvider s3provider = new SimpleS3Blobprovider();
+        Map<String,String> properties = getBaseProperties();
+        Assume.assumeTrue("Credentials are set",properties!=null);
+        s3provider.initialize("s3simple",properties);
+        blobManager.getBlobProviders().put("s3simple",s3provider);
+        Blob blob = s3provider.readBlob(null);
+    }
+
+    public Map<String,String> getBaseProperties() {
+        if (System.getProperty("simple.s3.awsid") == null || System.getProperty("simple.s3.awssecret") == null) {
+            return null;
+        }
         Map<String,String> properties = new HashMap<>();
         properties.put("region",System.getProperty("simple.s3.region"));
         properties.put("bucket",System.getProperty("simple.s3.bucket"));
         properties.put("awsid",System.getProperty("simple.s3.awsid"));
         properties.put("awssecret",System.getProperty("simple.s3.awssecret"));
-        s3provider.initialize("s3simple",properties);
-        blobManager.getBlobProviders().put("s3simple",s3provider);
-        Blob blob = s3provider.readBlob(null);
+        return properties;
+    }
+
+    public String getObjectKey() {
+        return System.getProperty("simple.s3.object.key");
     }
 
 }
