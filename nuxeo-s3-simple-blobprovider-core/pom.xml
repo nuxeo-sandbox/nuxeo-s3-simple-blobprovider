@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.nuxeo.labs.s3.simple.blobprovider</groupId>
     <artifactId>nuxeo-s3-simple-blobprovider-parent</artifactId>
-    <version>8.10-SNAPSHOT</version>
+    <version>9.2-SNAPSHOT</version>
   </parent>
   <artifactId>nuxeo-s3-simple-blobprovider-core</artifactId>
   <name>Nuxeo s3 simple blobprovider core</name>

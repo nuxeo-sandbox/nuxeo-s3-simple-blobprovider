@@ -40,12 +40,8 @@ import org.nuxeo.common.utils.RFC2231;
 import org.nuxeo.common.utils.SizeUtils;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.NuxeoException;
-import org.nuxeo.ecm.core.blob.AbstractBlobProvider;
-import org.nuxeo.ecm.core.blob.BlobManager;
-import org.nuxeo.ecm.core.blob.ManagedBlob;
-import org.nuxeo.ecm.core.blob.SimpleManagedBlob;
+import org.nuxeo.ecm.core.blob.*;
 import org.nuxeo.ecm.core.io.download.DownloadHelper;
-import org.nuxeo.ecm.core.model.Document;
 import org.nuxeo.runtime.api.Framework;
 
 import javax.servlet.http.HttpServletRequest;
@@ -116,7 +112,7 @@ public class SimpleS3Blobprovider extends AbstractBlobProvider {
     }
 
     @Override
-    public Blob readBlob(BlobManager.BlobInfo blobInfo) throws IOException {
+    public Blob readBlob(BlobInfo blobInfo) throws IOException {
         if (blobInfo == null || blobInfo.key == null) {
             throw new IOException("Invalid blobinfo: "+blobInfo);
         }
@@ -124,7 +120,7 @@ public class SimpleS3Blobprovider extends AbstractBlobProvider {
     }
 
     @Override
-    public String writeBlob(Blob blob, Document doc) throws IOException {
+    public String writeBlob(Blob blob) throws IOException {
         throw new UnsupportedOperationException("Write not supported");
     }
 

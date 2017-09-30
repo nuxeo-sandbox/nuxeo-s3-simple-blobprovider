@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.nuxeo.ecm.automation.OperationException;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.blob.BlobInfo;
 import org.nuxeo.ecm.core.blob.BlobManager;
 import org.nuxeo.ecm.core.blob.BlobProvider;
 import org.nuxeo.ecm.core.blob.ManagedBlob;
@@ -63,7 +64,7 @@ public class TestSimples3Blobprovider {
         Assume.assumeTrue("Credentials are set",properties!=null);
         s3provider.initialize("s3simple",properties);
         blobManager.getBlobProviders().put("s3simple",s3provider);
-        BlobManager.BlobInfo info = new BlobManager.BlobInfo();
+        BlobInfo info = new BlobInfo();
         info.key = "s3simple:"+getObjectKey();
         info.filename = getObjectKey();
         Blob blob = s3provider.readBlob(info);
@@ -81,7 +82,7 @@ public class TestSimples3Blobprovider {
         properties.put("directdownload","true");
         s3provider.initialize("s3simple",properties);
         blobManager.getBlobProviders().put("s3simple",s3provider);
-        BlobManager.BlobInfo info = new BlobManager.BlobInfo();
+        BlobInfo info = new BlobInfo();
         info.key = "s3simple:"+getObjectKey();
         info.filename = getObjectKey();
         ManagedBlob blob = (ManagedBlob) s3provider.readBlob(info);
