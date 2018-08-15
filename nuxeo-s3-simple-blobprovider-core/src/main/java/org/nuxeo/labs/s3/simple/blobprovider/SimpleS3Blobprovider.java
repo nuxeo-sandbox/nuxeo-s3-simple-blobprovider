@@ -19,13 +19,15 @@
 
 package org.nuxeo.labs.s3.simple.blobprovider;
 
-import com.amazonaws.ClientConfiguration;
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.HttpMethod;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.Regions;
+import com.amazonaws.auth.InstanceProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3Builder;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -54,6 +56,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 import java.util.Map;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class SimpleS3Blobprovider extends AbstractBlobProvider {
 
@@ -89,6 +93,9 @@ public class SimpleS3Blobprovider extends AbstractBlobProvider {
 
     public FileCache fileCache;
 
+    protected AWSCredentialsProvider awsCredentialsProvider;
+
+
 
     @Override
     public void initialize(String blobProviderId, Map<String, String> properties) throws IOException {
@@ -105,11 +112,36 @@ public class SimpleS3Blobprovider extends AbstractBlobProvider {
         directDownload = Boolean.parseBoolean(properties.getOrDefault(DIRECTDOWNLOAD_PROPERTY, "false"));
         directDownloadExpire = Integer.parseInt(properties.getOrDefault(DIRECTDOWNLOAD_EXPIRE_PROPERTY,"1"));
 
-        amazonS3 = new AmazonS3Client(new BasicAWSCredentials(awsID,awsSecret),new ClientConfiguration());
-        amazonS3.setRegion(Region.getRegion(Regions.fromName(bucketRegion)));
+        // set up credentials
+        awsCredentialsProvider = getAWSCredentialsProvider(awsID, awsSecret);
+
+        AmazonS3Builder<?, ?> s3Builder;
+        s3Builder = AmazonS3ClientBuilder.standard()
+                .withCredentials(awsCredentialsProvider);
+        s3Builder = s3Builder.withRegion(bucketRegion);
+
+        amazonS3 = s3Builder.build();
+
         initializeCache(SizeUtils.parseSizeInBytes(cacheSizeStr),Long.parseLong(cacheCountStr),Long.parseLong(minAgeStr));
 
     }
+
+    public static AWSCredentialsProvider getAWSCredentialsProvider(String awsSecretKeyId, String awsSecretAccessKey) {
+        AWSCredentialsProvider awsCredentialsProvider;
+        if (isBlank(awsSecretKeyId) || isBlank(awsSecretAccessKey)) {
+            awsCredentialsProvider = InstanceProfileCredentialsProvider.getInstance();
+            try {
+                awsCredentialsProvider.getCredentials();
+            } catch (AmazonClientException e) {
+                throw new NuxeoException("Missing AWS credentials and no instance role found", e);
+            }
+        } else {
+            awsCredentialsProvider = new AWSStaticCredentialsProvider(
+                    new BasicAWSCredentials(awsSecretKeyId, awsSecretAccessKey));
+        }
+        return awsCredentialsProvider;
+    }
+
 
     @Override
     public Blob readBlob(BlobInfo blobInfo) throws IOException {
