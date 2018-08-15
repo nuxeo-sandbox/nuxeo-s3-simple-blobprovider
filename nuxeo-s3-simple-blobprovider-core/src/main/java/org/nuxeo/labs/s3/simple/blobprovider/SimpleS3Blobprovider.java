@@ -148,6 +148,16 @@ public class SimpleS3Blobprovider extends AbstractBlobProvider {
         if (blobInfo == null || blobInfo.key == null) {
             throw new IOException("Invalid blobinfo: "+blobInfo);
         }
+        S3Object object;
+        try {
+            GetObjectRequest request = new GetObjectRequest(getBucketName(),blobInfo.filename);
+            object = getClient().getObject(request);
+        } catch (AmazonS3Exception e) {
+            throw new IOException(String.format("Could not get key %s in bucket %s",blobInfo.filename,bucketName),e);
+        }
+        blobInfo.length = object.getObjectMetadata().getContentLength();
+        blobInfo.digest = object.getObjectMetadata().getContentMD5();
+        object.close();
         return new SimpleManagedBlob(blobInfo);
     }
 
@@ -182,7 +192,7 @@ public class SimpleS3Blobprovider extends AbstractBlobProvider {
             GetObjectRequest request = new GetObjectRequest(getBucketName(),key);
             object = getClient().getObject(request);
         } catch (AmazonS3Exception e) {
-            throw new IOException(String.format("Could get key %s in bucket %s",key,bucketName));
+            throw new IOException(String.format("Could not get key %s in bucket %s",key,bucketName),e);
         }
         String etag = object.getObjectMetadata().getETag();
         File cachedFile = fileCache.getFile(etag);
