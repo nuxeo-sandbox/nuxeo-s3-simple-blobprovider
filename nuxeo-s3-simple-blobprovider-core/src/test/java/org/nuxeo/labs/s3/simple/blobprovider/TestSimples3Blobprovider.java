@@ -101,14 +101,18 @@ public class TestSimples3Blobprovider {
     }
 
     public Map<String,String> getBaseProperties() {
-        if (System.getProperty("simple.s3.awsid") == null || System.getProperty("simple.s3.awssecret") == null) {
+        if (System.getProperty("simple.s3.region") == null) {
             return null;
         }
         Map<String,String> properties = new HashMap<>();
         properties.put("region",System.getProperty("simple.s3.region"));
         properties.put("bucket",System.getProperty("simple.s3.bucket"));
-        properties.put("awsid",System.getProperty("simple.s3.awsid"));
-        properties.put("awssecret",System.getProperty("simple.s3.awssecret"));
+        if (System.getProperty("simple.s3.awsid")!=null) {
+            properties.put("awsid",System.getProperty("simple.s3.awsid"));
+        }
+        if (System.getProperty("simple.s3.awssecret")!=null) {
+            properties.put("awssecret",System.getProperty("simple.s3.awssecret"));
+        }
         return properties;
     }
 
