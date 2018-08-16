@@ -110,7 +110,7 @@ public class SimpleS3Blobprovider extends AbstractBlobProvider {
         String minAgeStr = properties.getOrDefault(CACHE_MIN_AGE_PROPERTY, "3600");
 
         directDownload = Boolean.parseBoolean(properties.getOrDefault(DIRECTDOWNLOAD_PROPERTY, "false"));
-        directDownloadExpire = Integer.parseInt(properties.getOrDefault(DIRECTDOWNLOAD_EXPIRE_PROPERTY,"1"));
+        directDownloadExpire = Integer.parseInt(properties.getOrDefault(DIRECTDOWNLOAD_EXPIRE_PROPERTY,"3600"));
 
         // set up credentials
         awsCredentialsProvider = getAWSCredentialsProvider(awsID, awsSecret);
